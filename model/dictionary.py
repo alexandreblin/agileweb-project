@@ -1,7 +1,12 @@
 class Dictionary(object):
-	def __init__(self, dictFile):
-		self.dictFile = dictFile
-		
+	DICTIONARY_FILE = 'anglais.txt'
+
+	def __init__(self):
+		with open(DICTIONARY_FILE) as f:
+    		content = f.readlines()
+
 	def isWordValid(self, word):
-		# TODO
-		return False
+		if word in content:
+			return True
+		else:
+			return False
