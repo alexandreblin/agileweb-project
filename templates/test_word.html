@@ -1,0 +1,7 @@
+{% if word %}
+The word '{{word}}' is <b>{% if not isvalid %}not {% endif %}valid</b>
+{% endif %}
+
+<form method="POST">
+	<input placeholder="Word" type="text" name="word" /><input type="submit" />
+</form>
