@@ -18,7 +18,7 @@ def test_word():
     isvalid = None
 
     if request.method == 'POST':
-        dictionary = Dictionary('dictionary.txt')
+        dictionary = Dictionary()
         word = request.form['word']
         isvalid = dictionary.isWordValid(word)
 
