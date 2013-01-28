@@ -1,5 +1,18 @@
 {% extends 'layout.html' %}
-
+{% set gridsize = 5 %}
+{% set word = 'hello' %}
 {% block content %}
 <h1>Game</h1>
+
+<table class="table table-bordered" style="width: auto; font-size: 24px; font-weight: bold; margin: 0 auto">
+  {% for i in range(gridsize) %}
+  <tr>
+  	{% for j in range(gridsize) %}
+  	<td style="height: 50px; width: 50px; text-align:center; vertical-align: middle">
+  		{% if i == 2 %}{{ word[j] | upper }}{% endif %}
+  	</td>
+  	{% endfor %}
+  </tr>
+  {% endfor %}
+</table>
 {% endblock %}
