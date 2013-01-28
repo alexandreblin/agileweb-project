@@ -4,15 +4,41 @@
 {% block content %}
 <h1>Game</h1>
 
-<table class="table table-bordered" style="width: auto; font-size: 24px; font-weight: bold; margin: 0 auto">
-  {% for i in range(gridsize) %}
-  <tr>
-  	{% for j in range(gridsize) %}
-  	<td style="height: 50px; width: 50px; text-align:center; vertical-align: middle">
-  		{% if i == 2 %}{{ word[j] | upper }}{% endif %}
-  	</td>
-  	{% endfor %}
-  </tr>
-  {% endfor %}
-</table>
+<div class="row">
+  <div class="span3">
+    <h3>Player 1</h3>
+    <h4>Words played :</h4>
+    <ul>
+      <li>Word</li>
+      <li>Word</li>
+      <li>Word</li>
+    </ul>
+  </div>
+  <div class="span6">
+    <table class="table table-bordered" id="gamegrid">
+      {% for i in range(gridsize) %}
+      <tr>
+        {% for j in range(gridsize) %}
+        <td>
+          {% if i == 2 %}
+          {{ word[j] | upper }}
+          {% else %}
+          <input type="text" size="1" maxlength="1" data-x="{{i}}" data-y="{{j}}" />
+          {% endif %}
+        </td>
+        {% endfor %}
+      </tr>
+      {% endfor %}
+    </table>
+  </div>
+  <div class="span3">
+    <h3>Player 2</h3>
+    <h4>Words played :</h4>
+    <ul>
+      <li>Word</li>
+      <li>Word</li>
+      <li>Word</li>
+    </ul>
+  </div>
+</div>
 {% endblock %}
