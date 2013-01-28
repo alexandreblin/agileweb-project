@@ -23,7 +23,7 @@
           {% if i == 2 %}
           {{ word[j] | upper }}
           {% else %}
-          <input type="text" size="1" maxlength="1" data-x="{{i}}" data-y="{{j}}" />
+          <input id="{{j}},{{i}}" type="text" size="1" maxlength="1" pattern="[A-Za-z]" data-x="{{j}}" data-y="{{i}}" />
           {% endif %}
         </td>
         {% endfor %}

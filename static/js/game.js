@@ -5,12 +5,15 @@
     var input = $(this).find("> input");
     if (!input.is(":focus")) {
       input.focus();
-      input.select();
     }
   });
-  
+
   $("#gamegrid td > input").focus(function() {
-    $(this).closest('td').addClass('focused');
+    var input = $(this);
+    input.closest('td').addClass('focused');
+    setTimeout(function() {
+      input.select();
+    },1);
   });
 
   $("#gamegrid td > input").blur(function() {
