@@ -1,3 +1,4 @@
+import random
 class Dictionary(object):
     DICTFILE = 'resources/anglais.txt'
 
@@ -10,3 +11,8 @@ class Dictionary(object):
             return True
         else:
             return False
+
+    def getWord(self, length):
+        words = [word for word in self.content if len(word) == length]
+        ran = random.randint(0, len(words))
+        return words[ran]
