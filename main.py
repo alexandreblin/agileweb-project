@@ -21,10 +21,25 @@ def index():
 def test_word():
     word = None
     isvalid = None
+    game.getCurrentPlayer()
     
     if request.method == 'POST':
     	word = request.form['word']
-        isvalid = game.addWord(1, word)
+        isvalid = game.addWord(word, 'a', 0, 1)
+        print "Current "
+        print game.getCurrentPlayer().id
+        print '<br>'
+        print "0: "
+        print game.getPlayer(0).score
+        print '<br>'
+        print game.getPlayer(0).words
+        print '<br>'
+        print "1: "
+        print game.getPlayer(1).score
+        print '<br>'
+        print game.getPlayer(1).words
+        print '<br>'
+
 
     return render_template('test_word.html', word=word, valid=isvalid)
 
@@ -32,7 +47,9 @@ def test_word():
 def word():
     word = None
   
-    game = Game()
-    game.printGameField()
+    print ' huy <br>'
+    game.getNumberOfPlayers()
+    num = game.getCurrentPlayer()
+    game.getNextPlayer(num.id)
 
     return render_template('index.html')
