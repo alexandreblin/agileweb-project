@@ -1,16 +1,18 @@
-from flask import Flask, request, render_template, redirect, url_for, g
+from flask import Flask, request, render_template, redirect, url_for
 from model.dictionary import Dictionary
 from model.game import Game
+import binascii
+import os
 
 app = Flask(__name__)
 
-from google.appengine.ext import db
-from google.appengine.api import users
+games = {}
 
 game = Game()
-   
+
 game.addPlayer("Alex")
 game.addPlayer("Tanya")
+
 
 @app.route('/')
 def index():
@@ -22,9 +24,9 @@ def test_word():
     word = None
     isvalid = None
     game.getCurrentPlayer()
-    
+
     if request.method == 'POST':
-    	word = request.form['word']
+        word = request.form['word']
         isvalid = game.addWord(word, 'a', 0, 1)
         print "Current "
         print game.getCurrentPlayer().id
@@ -40,16 +42,36 @@ def test_word():
         print game.getPlayer(1).words
         print '<br>'
 
-
     return render_template('test_word.html', word=word, valid=isvalid)
+
 
 @app.route('/word')
 def word():
     word = None
-  
+
     print ' huy <br>'
     game.getNumberOfPlayers()
     num = game.getCurrentPlayer()
     game.getNextPlayer(num.id)
 
     return render_template('index.html')
+
+
+@app.route('/new')
+def newgame():
+    # generate an ID that is not already used
+    uniqueID = binascii.hexlify(os.urandom(8))
+    while uniqueID in games:
+        uniqueID = binascii.hexlify(os.urandom(8))
+
+    games[uniqueID] = {}
+
+    return redirect(url_for('gameview', gameId=uniqueID))
+
+
+@app.route('/game/<gameId>')
+def gameview(gameId):
+    if gameId not in games:
+        return 'Invalid game ID'
+
+    return render_template('game.html')
