@@ -1,9 +1,15 @@
 {% extends 'layout.html' %}
 
+{% macro displayFlashes() %}
+{% for category, message in get_flashed_messages(with_categories=True) %}
+<div class="alert alert-{{ category }}">{{ message }}</div>
+{% endfor %}
+{%- endmacro %}
+
 {% macro playerBlock(player) %}
   <div class="span3">
-    <h3>{{ player.name }}</h3>
-    <h4>{{ player.score }} points</h4>
+    <h2>{{ player.name }}</h2>
+    <h3>{{ player.score }} points</h3>
     <h4>Words played :</h4>
     <ul>
       {% for word in player.words %}
@@ -16,11 +22,11 @@
 {% endmacro %}
 
 {% block content %}
-<h1>Game</h1>
 <div class="row">
   {{ playerBlock(playerInfos[0]) }}
-  <div class="span6">
-    <table class="table table-bordered" id="gamegrid">
+  <div id="game" class="span6">
+    <h1 class="lead">{{ currentPlayer.name }}'s turn</h1>
+    <table class="table table-bordered" id="grid">
       {% for i in range(gridSize) %}
       <tr>
         {% for j in range(gridSize) %}
@@ -35,6 +41,17 @@
       </tr>
       {% endfor %}
     </table>
+    {{ displayFlashes() }}
+    <form class="form-inline" method="POST">
+      
+
+      <p>Letter: <strong id="letter" data-default="None">None</strong></p>
+
+      <div class="input-append">
+        <input class="input-small" type="text" name="word" placeholder="Word" />
+        <button type="submit" class="btn">➠</button>
+      </div>
+    </form>
   </div>
   {{ playerBlock(playerInfos[1]) }}
 </div>

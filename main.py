@@ -1,12 +1,13 @@
-from flask import Flask, request, render_template, redirect, url_for
-from model.dictionary import Dictionary
+from flask import Flask, request, render_template, redirect, url_for, flash
 from model.game import Game
 import binascii
 import os
 
 app = Flask(__name__)
+app.secret_key = os.urandom(24)
 
 games = {}
+
 
 @app.route('/')
 def index():
@@ -68,12 +69,29 @@ def newgame():
     return redirect(url_for('gameview', gameId=uniqueID))
 
 
-@app.route('/game/<gameId>')
+@app.route('/game/<gameId>', methods=['GET', 'POST'])
 def gameview(gameId):
     if gameId not in games:
         return redirect(url_for('index'))
 
     game = games[gameId]
+
+    if request.method == 'POST':
+        letter = request.form['letter']
+        word = request.form['word']
+        x, y = int(request.form['x']), int(request.form['y'])
+
+        if not letter:
+            flash('You must put a letter', 'error')
+        elif not word:
+            flash('You must type a word', 'error')
+        elif x < 0 or x >= game.dimension or y < 0 or y >= game.dimension:
+            flash('Invalid letter position', 'error')
+        else:
+            if not game.addWord(word, letter, x, y):
+                flash('Unknown word, or already used')
+
+        return redirect(url_for('gameview', gameId=gameId))
 
     playerInfos = []
 
@@ -84,4 +102,6 @@ def gameview(gameId):
             'words': player.words
         })
 
-    return render_template('game.html', gameField=game.gameField, gridSize=game.dimension, playerInfos=playerInfos)
+    currentPlayer = playerInfos[game.getCurrentPlayer().id]
+
+    return render_template('game.html', gameField=game.gameField, gridSize=game.dimension, playerInfos=playerInfos, currentPlayer=currentPlayer)
