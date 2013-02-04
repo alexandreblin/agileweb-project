@@ -1,9 +1,35 @@
 !function ($) {
   "use strict";
-  
-  $("#gamegrid td").click(function() {
+
+  function enableAndFocus(input) {
+    $(input).prop('disabled', false);
+    $(input).focus();
+  }
+
+  var isDown = false;
+
+  $("#gamegrid").mousedown(function() {
+    console.log('down');
+    isDown = true;
+  });
+
+  $(document).mouseup(function() {
+    console.log('up');
+    isDown = false;
+  });
+
+  $("#gamegrid td").mouseover(function(){
+    console.log('over');
+    if(isDown) {
+      console.log('bim');
+      $(this).closest('td').css({background:"#333333"});
+    }
+  });
+
+  $("#gamegrid td").dblclick(function(e) {
     var input = $(this).find("> input");
     if (!input.is(":focus")) {
+      input.prop('disabled', false);
       input.focus();
     }
   });
@@ -18,6 +44,7 @@
 
   $("#gamegrid td > input").blur(function() {
     $(this).closest('td').removeClass('focused');
+    $(this).prop('disabled', true);
   });
 
   $("#gamegrid td > input").keydown(function(event) {
@@ -35,12 +62,12 @@
         return $(a).data('x') - $(b).data('x');
       });
 
-      var idx = $.inArray(this, inputs)
+      var idx = $.inArray(this, inputs);
 
       if (event.keyCode == 39) {
-        inputs[(idx+1+inputs.length)%inputs.length].focus();
+        enableAndFocus(inputs[(idx+1+inputs.length)%inputs.length]);
       } else {
-        inputs[(idx-1+inputs.length)%inputs.length].focus();
+        enableAndFocus(inputs[(idx-1+inputs.length)%inputs.length]);
       }
     } else if (event.keyCode == 38 || event.keyCode == 40) {
       var inputs = $('#gamegrid td > input').filter(function() {
@@ -54,9 +81,9 @@
       var idx = $.inArray(this, inputs)
 
       if (event.keyCode == 38) {
-        inputs[(idx-1+inputs.length)%inputs.length].focus();
+        enableAndFocus(inputs[(idx-1+inputs.length)%inputs.length]);
       } else {
-        inputs[(idx+1+inputs.length)%inputs.length].focus();
+        enableAndFocus(inputs[(idx+1+inputs.length)%inputs.length]);
       }
     }
   });

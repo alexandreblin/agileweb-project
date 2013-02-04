@@ -21,6 +21,7 @@
   background-color: transparent;
 
   /* canceling default bootstrap style for inputs */
+  cursor: auto;
   border-color: transparent;
   -webkit-box-shadow: none;
      -moz-box-shadow: none;

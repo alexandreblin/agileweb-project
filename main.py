@@ -8,53 +8,47 @@ app = Flask(__name__)
 
 games = {}
 
-game = Game()
-
-game.addPlayer("Alex")
-game.addPlayer("Tanya")
-
-
 @app.route('/')
 def index():
     return render_template('index.html')
 
 
-@app.route('/test_word', methods=['GET', 'POST'])
-def test_word():
-    word = None
-    isvalid = None
-    game.getCurrentPlayer()
+# @app.route('/test_word', methods=['GET', 'POST'])
+# def test_word():
+#     word = None
+#     isvalid = None
+#     game.getCurrentPlayer()
 
-    if request.method == 'POST':
-        word = request.form['word']
-        isvalid = game.addWord(word, 'a', 0, 1)
-        print "Current "
-        print game.getCurrentPlayer().id
-        print '<br>'
-        print "0: "
-        print game.getPlayer(0).score
-        print '<br>'
-        print game.getPlayer(0).words
-        print '<br>'
-        print "1: "
-        print game.getPlayer(1).score
-        print '<br>'
-        print game.getPlayer(1).words
-        print '<br>'
+#     if request.method == 'POST':
+#         word = request.form['word']
+#         isvalid = game.addWord(word, 'a', 0, 1)
+#         print "Current "
+#         print game.getCurrentPlayer().id
+#         print '<br>'
+#         print "0: "
+#         print game.getPlayer(0).score
+#         print '<br>'
+#         print game.getPlayer(0).words
+#         print '<br>'
+#         print "1: "
+#         print game.getPlayer(1).score
+#         print '<br>'
+#         print game.getPlayer(1).words
+#         print '<br>'
 
-    return render_template('test_word.html', word=word, valid=isvalid)
+#     return render_template('test_word.html', word=word, valid=isvalid)
 
 
-@app.route('/word')
-def word():
-    word = None
+# @app.route('/word')
+# def word():
+#     word = None
 
-    print ' huy <br>'
-    game.getNumberOfPlayers()
-    num = game.getCurrentPlayer()
-    game.getNextPlayer(num.id)
+#     print ' huy <br>'
+#     game.getNumberOfPlayers()
+#     num = game.getCurrentPlayer()
+#     game.getNextPlayer(num.id)
 
-    return render_template('index.html')
+#     return render_template('index.html')
 
 
 @app.route('/new')
@@ -64,7 +58,12 @@ def newgame():
     while uniqueID in games:
         uniqueID = binascii.hexlify(os.urandom(8))
 
-    games[uniqueID] = {}
+    game = Game()
+
+    game.addPlayer("Alex")
+    game.addPlayer("Tanya")
+
+    games[uniqueID] = game
 
     return redirect(url_for('gameview', gameId=uniqueID))
 
@@ -72,6 +71,17 @@ def newgame():
 @app.route('/game/<gameId>')
 def gameview(gameId):
     if gameId not in games:
-        return 'Invalid game ID'
+        return redirect(url_for('index'))
 
-    return render_template('game.html')
+    game = games[gameId]
+
+    playerInfos = []
+
+    for player in game.players:
+        playerInfos.append({
+            'name': player.name,
+            'score': player.score,
+            'words': player.words
+        })
+
+    return render_template('game.html', gameField=game.gameField, gridSize=game.dimension, playerInfos=playerInfos)
