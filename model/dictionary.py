@@ -7,7 +7,7 @@ class Dictionary(object):
             self.content = f.read().splitlines()
 
     def isWordValid(self, word):
-        if word in self.content:
+        if word.lower() in self.content:
             return True
         else:
             return False

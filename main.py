@@ -1,5 +1,6 @@
 from flask import Flask, request, render_template, redirect, url_for, flash
 from model.game import Game
+from model.letter import Letter
 import binascii
 import os
 
@@ -50,6 +51,24 @@ def index():
 #     game.getNextPlayer(num.id)
 
 #     return render_template('index.html')
+
+@app.route('/test')
+def test_word():
+    game = Game()
+    game.setTestWord();
+    game.addPlayer("Alex")
+    game.addPlayer("Tanya")
+    letter1 = Letter('a', 1, 0)
+    letter2 = Letter('a', 2, 0)
+    word = []
+    word.append(letter1)
+    word.append(letter2)
+    game.addWord(word, letter1)
+    game.printGameField()
+
+    return render_template('index.html')
+
+
 
 
 @app.route('/new')
