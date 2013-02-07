@@ -1,6 +1,9 @@
 import random
+import os
+
+
 class Dictionary(object):
-    DICTFILE = 'resources/anglais.txt'
+    DICTFILE = os.path.join(os.path.dirname(__file__), '../resources/anglais.txt')
 
     def __init__(self):
         with open(Dictionary.DICTFILE) as f:
