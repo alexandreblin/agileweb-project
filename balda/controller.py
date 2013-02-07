@@ -1,11 +1,9 @@
-from flask import Flask, request, render_template, redirect, url_for, flash
-from model.game import Game
-from model.letter import Letter
+from flask import request, render_template, redirect, url_for, flash
+from balda import app
+from balda.model.game import Game
+from balda.model.letter import Letter
 import binascii
 import os
-
-app = Flask(__name__)
-app.secret_key = os.urandom(24)
 
 games = {}
 

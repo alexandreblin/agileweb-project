@@ -1,6 +1,6 @@
-from model.dictionary import Dictionary
-from model.Player import Player
-from model.state import State
+from balda.model.dictionary import Dictionary
+from balda.model.Player import Player
+from balda.model.state import State
 import math
 
 class Game(object):
