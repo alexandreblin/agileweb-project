@@ -3,6 +3,7 @@ from balda import app
 from balda.model.game import Game
 from balda.model.letter import Letter
 import binascii
+import json
 import os
 
 games = {}
@@ -73,19 +74,33 @@ def gameview(gameId):
     game = games[gameId]
 
     if request.method == 'POST':
-        letter = request.form['letter']
-        word = request.form['word']
-        x, y = int(request.form['x']), int(request.form['y'])
+        wordJSON = json.loads(request.form['word'])
 
-        if not letter:
-            flash('You must put a letter', 'error')
-        elif not word:
-            flash('You must type a word', 'error')
-        elif x < 0 or x >= game.dimension or y < 0 or y >= game.dimension:
-            flash('Invalid letter position', 'error')
+        word = []
+        addedLetter = None
+        for l in wordJSON:
+            letter = Letter(l['letter'], l['x'], l['y'])
+            word.append(letter)
+            if l['isAddedLetter']:
+                addedLetter = letter
+
+        if len(word) < 2:
+            flash('You must make a word', 'error')
+        elif not addedLetter:
+            flash('The word must contain a new letter', 'error')
         else:
-            if not game.addWord(word, letter, x, y):
-                flash('Unknown word, or already used')
+            res = game.addWord(word, addedLetter or word[0])
+
+            if res == Game.State.SUCCESS:
+                flash('Yay', 'success')
+            elif res == Game.State.ERR_UNKNOWN_WORD:
+                flash('Unknown word', 'error')
+            elif res == Game.State.ERR_ALREADY_USED:
+                flash('This word was already played', 'error')
+            elif res == Game.State.ERR_WORD_IS_NOT_ON_FIELD:
+                flash('Invalid word placement', 'error')
+            else:
+                flash('wut?', 'error')
 
         return redirect(url_for('gameview', gameId=gameId))
 
@@ -98,6 +113,6 @@ def gameview(gameId):
             'words': player.words
         })
 
-    currentPlayer = playerInfos[game.getCurrentPlayer().id]
+    currentPlayer = playerInfos[game.getCurrentPlayer().id] if len(playerInfos) > 0 else None
 
     return render_template('game.html', gameField=game.gameField, gridSize=game.dimension, playerInfos=playerInfos, currentPlayer=currentPlayer)

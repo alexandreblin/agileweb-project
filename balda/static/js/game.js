@@ -1,19 +1,10 @@
 !function ($) {
   "use strict";
 
-  var letter = null;
-  var letterX = -1;
-  var letterY = -1;
-
-  function setLetter(l) {
-    letter = l.toUpperCase() || null;
-    $("#letter").html(letter || $("#letter").data('default'));
-  }
+  var word = [];
 
   $("#game form").submit(function() {
-    $(this).append($("<input>").attr("type", "hidden").attr("name", "letter").val(letter));
-    $(this).append($("<input>").attr("type", "hidden").attr("name", "x").val(letterX));
-    $(this).append($("<input>").attr("type", "hidden").attr("name", "y").val(letterY));
+    $(this).append($("<input>").attr("type", "hidden").attr("name", "word").val(JSON.stringify(word)));
   });
 
   function enableAndFocus(input) {
@@ -21,23 +12,68 @@
     $(input).focus();
   }
 
+  function getCellLetter(td) {
+    var x = $(td).data('x');
+    var y = $(td).data('y');
+
+    var input = $(td).find('> input');
+    var letter;
+    var isAddedLetter;
+    if (input.length > 0) {
+      letter = input.val();
+      isAddedLetter = true;
+    } else if ($(td).html()) {
+      letter = $(td).html().trim();
+      isAddedLetter = false;
+    }
+
+    if (!letter) {
+      return false;
+    }
+
+    return {'letter': letter.toLowerCase(), 'x': x, 'y': y, 'isAddedLetter': isAddedLetter};
+  }
+
+  function addLetterToWord(letter) {
+    for (var i in word) {
+      var l = word[i];
+      if (l.x == letter.x && l.y == letter.y) {
+        return;
+      }
+    }
+    
+    if (word.length === 0) {
+      $('#word').html('');
+    }
+
+    word.push(letter);
+    
+    $("#word").append(letter.letter.toUpperCase());
+  }
+
   var isDown = false;
 
-  $("#grid").mousedown(function() {
-    // console.log('down');
+  $("#grid td").mousedown(function() {
     isDown = true;
+    word = [];
+    $('#grid td').css({background:"#fff"});
+    $(this).trigger('mouseover');
   });
 
   $(document).mouseup(function() {
-    // console.log('up');
     isDown = false;
   });
 
-  $("#grid td").mouseover(function(){
-    // console.log('over');
-    if(isDown) {
-      // console.log('bim');
-      $(this).closest('td').css({background:"#333333"});
+  $("#grid td").mouseover(function(e){
+    if (!isDown) return;
+
+    var letter = getCellLetter(this);
+    if(letter) {
+      $(this).closest('td').css({background:"#eee"});
+
+      addLetterToWord(letter);
+
+      console.log(JSON.stringify(word));
     }
   });
 
@@ -63,62 +99,12 @@
   });
 
   $("#grid td > input").change(function() {
-    setLetter(this.value);
-    if (this.value) {
-      letterX = $(this).data('x');
-      letterY = $(this).data('y');
-    } else {
-      letterX = -1;
-      letterY = -1;
-    }
-
     var changedInput = this;
     $("#grid td > input").each(function(idx, element) {
       if (element != changedInput) {
         element.value = '';
       }
     });
-  });
-
-  $("#grid td > input").keydown(function(event) {
-    if (event.ctrlKey || event.altKey || event.shiftKey || event.metaKey) return;
-
-    var x = $(this).data('x');
-    var y = $(this).data('y');
-
-    if (event.keyCode == 39 || event.keyCode == 37) {
-      var inputs = $('#grid td > input').filter(function() {
-        return $(this).data('y') == y;
-      });
-
-      inputs.sort(function(a, b) {
-        return $(a).data('x') - $(b).data('x');
-      });
-
-      var idx = $.inArray(this, inputs);
-
-      if (event.keyCode == 39) {
-        enableAndFocus(inputs[(idx+1+inputs.length)%inputs.length]);
-      } else {
-        enableAndFocus(inputs[(idx-1+inputs.length)%inputs.length]);
-      }
-    } else if (event.keyCode == 38 || event.keyCode == 40) {
-      var inputs = $('#grid td > input').filter(function() {
-        return $(this).data('x') == x;
-      });
-
-      inputs.sort(function(a, b) {
-        return $(a).data('y') - $(b).data('y');
-      });
-
-      var idx = $.inArray(this, inputs)
-
-      if (event.keyCode == 38) {
-        enableAndFocus(inputs[(idx-1+inputs.length)%inputs.length]);
-      } else {
-        enableAndFocus(inputs[(idx+1+inputs.length)%inputs.length]);
-      }
-    }
   });
 
 }(window.jQuery);
