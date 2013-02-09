@@ -15,7 +15,7 @@
     <h4>Words played :</h4>
     <ul>
       {% for word in player.words %}
-      <li>{{ word }}</li>
+      <li>{{ word | upper }}</li>
       {% else %}
       <li>None</li>
       {% endfor %}
@@ -34,11 +34,11 @@
       <tr>
         {% for j in range(gridSize) %}
         <td data-x="{{i}}" data-y="{{j}}">
-          {% if gameField[i][j] %}
+          {%- if gameField[i][j] -%}
           {{ gameField[i][j] | upper }}
-          {% else %}
+          {%- else -%}
           <input type="text" size="1" maxlength="1" pattern="[A-Za-z]" disabled />
-          {% endif %}
+          {%- endif -%}
         </td>
         {% endfor %}
       </tr>
