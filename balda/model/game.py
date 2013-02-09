@@ -1,9 +1,13 @@
 from balda.model.dictionary import Dictionary
 from balda.model.Player import Player
-from balda.model.state import State
 import math
 
 class Game(object):
+	class State:
+		ERR_UNKNOWN_WORD = -1
+		ERR_ALREADY_USED = -2
+		ERR_WORD_IS_NOT_ON_FIELD = -3
+		SUCCESS =  1
 
 	def __init__(self, dimension = 5, maxPlayers = 2, startPlayer = 0):
 		self.maxPlayers = maxPlayers
@@ -35,11 +39,11 @@ class Game(object):
 		playerId = self.getCurrentPlayerId()
 		word = self.getWord(obj_word)
 		if not dictionary.isWordValid(word):
-			return State.ERR_UNKNOWN_WORD
+			return Game.State.ERR_UNKNOWN_WORD
 		elif  word in self.getAllUsedWords():
-			return State.ERR_ALREDY_USED
+			return Game.State.ERR_ALREADY_USED
 		elif  self.isWordNotValid(obj_word, obj_letter):
-			return State.ERR_WORD_IS_NOT_ON_FIELD
+			return Game.State.ERR_WORD_IS_NOT_ON_FIELD
 		else:
 			self.players[playerId].words.append(word)
 			self.gameField[obj_letter.posLine][obj_letter.posColumn] = obj_letter.letter
@@ -47,7 +51,7 @@ class Game(object):
 
 			self.setCurrentPlayer(self.getNextPlayerId())
 
-			return State.SUCCESS
+			return Game.State.SUCCESS
 
 	def isWordNotValid (self, obj_word, obj_letter):
 		for x in range(0, len(obj_word)):
