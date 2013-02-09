@@ -54,11 +54,25 @@ class Game(object):
 			return Game.State.SUCCESS
 
 	def isWordNotValid (self, obj_word, obj_letter):
-		for x in range(0, len(obj_word)):
-			if obj_word[x].letter != self.gameField[obj_word[x].posLine][obj_word[x].posColumn] and self.gameField[obj_word[x].posLine][obj_word[x].posColumn] != '.':
+		# check if the added letter is actually on a free spot
+		if self.gameField[obj_letter.posLine][obj_letter.posColumn] != '':
+			return True
+
+		for i, l in enumerate(obj_word):
+			# check if the other letters of the word actually are the correct letters on the grid
+			if l != obj_letter and self.gameField[l.posLine][l.posColumn] != l.letter:
 				return True
-			elif  obj_letter.letter != obj_word[x].letter:
+
+			# check if the letter is adjacent to the previous one
+			if i > 0 and not l.isAdjacent(obj_word[i-1]):
 				return True
+
+		# check that we don't use the same letter twice
+		for l1 in obj_word:
+			for l2 in obj_word:
+				if not l1 is l2 and l1.posColumn == l2.posColumn and l1.posLine == l2.posLine:
+					return True
+
 		return False
 
 
