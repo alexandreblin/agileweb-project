@@ -1,5 +1,6 @@
 from model.dictionary import Dictionary
 from model.Player import Player
+from model.state import State
 import math
 
 class Game(object):
@@ -12,7 +13,7 @@ class Game(object):
 		self.gameField = [[0 for x in xrange(dimension)] for x in xrange(dimension)] 
 		for line in range(0, dimension):
 			for col in range(0, dimension):
-				self.gameField[line][col] = '.'
+				self.gameField[line][col] = ''
 		self.setFirstWord()
 
 	def setFirstWord(self):
@@ -33,8 +34,12 @@ class Game(object):
 		dictionary = Dictionary()
 		playerId = self.getCurrentPlayerId()
 		word = self.getWord(obj_word)
-		if not dictionary.isWordValid(word) or word in self.getAllUsedWords() or self.isWordNotValid(obj_word, obj_letter):
-			return False
+		if not dictionary.isWordValid(word):
+			return State.ERR_UNKNOWN_WORD
+		elif  word in self.getAllUsedWords():
+			return State.ERR_ALREDY_USED
+		elif  self.isWordNotValid(obj_word, obj_letter):
+			return State.ERR_WORD_IS_NOT_ON_FIELD
 		else:
 			self.players[playerId].words.append(word)
 			self.gameField[obj_letter.posLine][obj_letter.posColumn] = obj_letter.letter
@@ -42,7 +47,7 @@ class Game(object):
 
 			self.setCurrentPlayer(self.getNextPlayerId())
 
-			return True
+			return State.SUCCESS
 
 	def isWordNotValid (self, obj_word, obj_letter):
 		for x in range(0, len(obj_word)):

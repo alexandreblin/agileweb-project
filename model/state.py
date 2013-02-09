@@ -1,0 +1,7 @@
+class State:
+	ERR_UNKNOWN_WORD = -1
+	ERR_ALREDY_USED = -2
+	ERR_WORD_IS_NOT_ON_FIELD = -3
+	SUCCESS =  1
+
+	

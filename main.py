@@ -15,30 +15,7 @@ def index():
     return render_template('index.html')
 
 
-# @app.route('/test_word', methods=['GET', 'POST'])
-# def test_word():
-#     word = None
-#     isvalid = None
-#     game.getCurrentPlayer()
 
-#     if request.method == 'POST':
-#         word = request.form['word']
-#         isvalid = game.addWord(word, 'a', 0, 1)
-#         print "Current "
-#         print game.getCurrentPlayer().id
-#         print '<br>'
-#         print "0: "
-#         print game.getPlayer(0).score
-#         print '<br>'
-#         print game.getPlayer(0).words
-#         print '<br>'
-#         print "1: "
-#         print game.getPlayer(1).score
-#         print '<br>'
-#         print game.getPlayer(1).words
-#         print '<br>'
-
-#     return render_template('test_word.html', word=word, valid=isvalid)
 
 
 # @app.route('/word')
@@ -52,21 +29,23 @@ def index():
 
 #     return render_template('index.html')
 
-@app.route('/test')
-def test_word():
-    game = Game()
-    game.setTestWord();
-    game.addPlayer("Alex")
-    game.addPlayer("Tanya")
-    letter1 = Letter('a', 1, 0)
-    letter2 = Letter('a', 2, 0)
-    word = []
-    word.append(letter1)
-    word.append(letter2)
-    game.addWord(word, letter1)
-    game.printGameField()
 
-    return render_template('index.html')
+#@app.route('/test')
+#def test_word():
+#    game = Game()
+#    game.setTestWord();
+#    game.addPlayer("Alex")
+#    game.addPlayer("Tanya")
+#    letter1 = Letter('a', 1, 0)
+#    letter2 = Letter('r', 2, 0)
+#    word = []
+#    word.append(letter1)
+#    word.append(letter2)
+#    res = game.addWord(word, letter1)
+#    print res
+#    print '<br>'
+
+#    return render_template('index.html')
 
 
 
