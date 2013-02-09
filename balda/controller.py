@@ -66,43 +66,12 @@ def newgame():
     return redirect(url_for('gameview', gameId=uniqueID))
 
 
-@app.route('/game/<gameId>', methods=['GET', 'POST'])
+@app.route('/game/<gameId>')
 def gameview(gameId):
     if gameId not in games:
         return redirect(url_for('index'))
 
     game = games[gameId]
-
-    if request.method == 'POST':
-        wordJSON = json.loads(request.form['word'])
-
-        word = []
-        addedLetter = None
-        for l in wordJSON:
-            letter = Letter(l['letter'], l['x'], l['y'])
-            word.append(letter)
-            if l['isAddedLetter']:
-                addedLetter = letter
-
-        if len(word) < 2:
-            flash('You must make a word', 'error')
-        elif not addedLetter:
-            flash('The word must contain a new letter', 'error')
-        else:
-            res = game.addWord(word, addedLetter or word[0])
-
-            if res == Game.State.SUCCESS:
-                flash('Yay', 'success')
-            elif res == Game.State.ERR_UNKNOWN_WORD:
-                flash('Unknown word', 'error')
-            elif res == Game.State.ERR_ALREADY_USED:
-                flash('This word was already played', 'error')
-            elif res == Game.State.ERR_WORD_IS_NOT_ON_FIELD:
-                flash('Invalid word placement', 'error')
-            else:
-                flash('wut?', 'error')
-
-        return redirect(url_for('gameview', gameId=gameId))
 
     playerInfos = []
 
@@ -115,4 +84,42 @@ def gameview(gameId):
 
     currentPlayer = playerInfos[game.getCurrentPlayer().id] if len(playerInfos) > 0 else None
 
-    return render_template('game.html', gameField=game.gameField, gridSize=game.dimension, playerInfos=playerInfos, currentPlayer=currentPlayer)
+    return render_template('game.html', gameId=gameId, gameField=game.gameField, gridSize=game.dimension, playerInfos=playerInfos, currentPlayer=currentPlayer)
+
+
+@app.route('/game/<gameId>/move', methods=['POST'])
+def game_doMove(gameId):
+    if gameId not in games:
+        return redirect(url_for('index'))
+
+    game = games[gameId]
+
+    wordJSON = json.loads(request.form['word'])
+
+    word = []
+    addedLetter = None
+    for l in wordJSON:
+        letter = Letter(l['letter'], l['x'], l['y'])
+        word.append(letter)
+        if l['isAddedLetter']:
+            addedLetter = letter
+
+    if len(word) < 2:
+        flash('You must make a word', 'error')
+    elif not addedLetter:
+        flash('The word must contain a new letter', 'error')
+    else:
+        res = game.addWord(word, addedLetter or word[0])
+
+        if res == Game.State.SUCCESS:
+            flash('Yay', 'success')
+        elif res == Game.State.ERR_UNKNOWN_WORD:
+            flash('Unknown word', 'error')
+        elif res == Game.State.ERR_ALREADY_USED:
+            flash('This word was already played', 'error')
+        elif res == Game.State.ERR_WORD_IS_NOT_ON_FIELD:
+            flash('Invalid word placement', 'error')
+        else:
+            flash('wut?', 'error')
+
+    return redirect(url_for('gameview', gameId=gameId))

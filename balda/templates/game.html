@@ -45,7 +45,7 @@
       {% endfor %}
     </table>
     {{ displayFlashes() }}
-    <form class="form-inline" method="POST">
+    <form action="{{ url_for('game_doMove', gameId=gameId) }}" class="form-inline" method="POST">
       Word: <strong id="word">None</strong> <button type="submit" class="btn btn-small">➠</button>
     </form>
   </div>
