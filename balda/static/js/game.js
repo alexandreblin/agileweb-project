@@ -9,6 +9,10 @@
     }
   };
 
+  if (playerId != currentPlayer) {
+    return;
+  }
+
   var word = [];
 
   $("#game form").submit(function() {
@@ -90,7 +94,7 @@
       var x = e.pageX - this.offsetLeft;
       var y = e.pageY - this.offsetTop;
       var padding = 10;
-      
+
       if (!(x > padding && x < this.offsetWidth - padding && y > padding && y < this.offsetHeight - padding)) {
         return;
       }

@@ -21,7 +21,8 @@
       {% endfor %}
     </ul>
     {% else %}
-    <h2 class="muted">Waiting for someone...</h2>
+    <h2 class="muted">Waiting for another player...</h2>
+    <p>Send the link of this page to someone to invite him</p>
     {% endif %}
   </div>
 {% endmacro %}
@@ -73,6 +74,8 @@
 {{ super() }}
 <script>
   var token = {{ token | tojson | safe }};
+  var playerId = {{ playerId | tojson | safe }};
+  var currentPlayer = {{ currentPlayer | tojson | safe }};
 </script>
 <script type="text/javascript" src="/_ah/channel/jsapi"></script>
 <script src="{{ url_for('static', filename='js/game.js') }}"></script>
