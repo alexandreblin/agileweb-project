@@ -49,6 +49,10 @@ def gameview(gameId):
             'words': player.words
         })
 
+    lastPlayed = [[False for col in row] for row in game.model.gameField]
+    for letter in game.model.getLastPlayedWord():
+        lastPlayed[letter.posLine][letter.posColumn] = True
+
     if game.model.gameEnded:
         winners = [player.id for player in game.model.getWinners()]
     else:
@@ -61,6 +65,7 @@ def gameview(gameId):
     return render_template('game.html', gameId=gameId,
                                       playerId=user.playerId,
                                      gameField=game.model.gameField,
+                                    lastPlayed=lastPlayed,
                                       gridSize=game.model.dimension,
                                    playerInfos=playerInfos,
                                  currentPlayer=game.model.getCurrentPlayerId(),

@@ -55,7 +55,7 @@
       {% for i in range(gridSize) %}
       <tr>
         {% for j in range(gridSize) %}
-        <td data-x="{{i}}" data-y="{{j}}">
+        <td data-x="{{i}}" data-y="{{j}}"{% if lastPlayed[i][j] %} class="selected"{% endif %}>
           {%- if gameField[i][j] -%}
           {{ gameField[i][j] | upper }}
           {%- else -%}

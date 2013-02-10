@@ -17,6 +17,7 @@ class Game(object):
 		self.startPlayer = startPlayer
 		self.players = []
 		self.usedWords = []
+		self.lastWord = None
 		self.gameEnded = False
 		self.gameField = [[0 for x in xrange(dimension)] for x in xrange(dimension)] 
 		for line in range(0, dimension):
@@ -57,6 +58,7 @@ class Game(object):
 			self.gameField[obj_letter.posLine][obj_letter.posColumn] = obj_letter.letter
 			self.players[playerId].score += len(word)
 			self.usedWords.append(word)
+			self.lastWord = obj_word
 
 			if self.isGameFieldComplit():
 				self.endGame()
@@ -73,10 +75,7 @@ class Game(object):
 		return True
 
 	def getLastPlayedWord(self):
-		if len(self.usedWords) <= 1:
-			return ''
-		else:
-			return self.usedWords[-1]
+		return self.lastWord or []
 
 	def endGame(self):
 		self.gameEnded = True
@@ -86,6 +85,7 @@ class Game(object):
 	
 	def passMove(self):
 		self.passedMovement += 1
+		self.lastWord = None
 		if self.passedMovement == 2*len(self.players):			
 			self.endGame()
 			return Game.State.END_OF_GAME
