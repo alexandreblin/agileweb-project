@@ -39,7 +39,7 @@
         {% if currentPlayer == playerId %}
         This is your turn
         {% else %}
-        Waiting for {{ playerInfos[currentPlayer].name }} to make his move...
+        Waiting for {{ playerInfos[currentPlayer].name }} to make a move...
         {% endif %}
       {% endif %}
     </h1>
@@ -51,7 +51,7 @@
           {%- if gameField[i][j] -%}
           {{ gameField[i][j] | upper }}
           {%- else -%}
-          <input type="text" size="1" maxlength="1" pattern="[A-Za-z]" disabled />
+          <input type="text" size="1" maxlength="1" pattern="[A-Za-z]" readonly />
           {%- endif -%}
         </td>
         {% endfor %}

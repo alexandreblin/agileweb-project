@@ -67,14 +67,14 @@
 
   var isDown = false;
 
-  $("#grid td").mousedown(function(e) {
+  $("#grid td, #grid input").mousedown(function(e) {
     isDown = true;
     word = [];
     
     $('#word').html('None');
     $('#grid input').blur();
     $('#grid td').removeClass('selected');
-    $('#grid').css('cursor','crosshair');
+    $('#grid td, #grid input').css('cursor','crosshair');
     $(this).trigger('mouseover');
 
     e.originalEvent.preventDefault();
@@ -82,10 +82,10 @@
 
   $(document).mouseup(function() {
     isDown = false;
-    $('#grid').css('cursor','auto');
+    $('#grid td, #grid input').css('cursor','auto');
   });
 
-  $("#grid td").mousemove(function(e){
+  $("#grid td, #grid input").mousemove(function(e){
     if (!isDown || $(this).closest('td').hasClass('selected')) return;
 
     if (word.length > 0) {
@@ -108,10 +108,10 @@
     }
   });
 
-  $("#grid td").dblclick(function(e) {
-    var input = $(this).find("> input");
+  $("#grid td, #grid input").dblclick(function(e) {
+    var input = $(this).find("input");
     if (!input.is(":focus")) {
-      input.prop('disabled', false);
+      input.prop('readonly', false);
       input.focus();
     }
   });
@@ -126,7 +126,7 @@
 
   $("#grid td > input").blur(function() {
     $(this).closest('td').removeClass('focused');
-    $(this).prop('disabled', true);
+    $(this).prop('readonly', true);
   });
 
   $("#grid td > input").change(function() {
