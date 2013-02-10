@@ -71,7 +71,10 @@ class Game(object):
 		return True
 
 	def getLastPlayedWord(self):
-		return seld.usedWords[-1]
+		if len(self.usedWords) <= 1:
+			return ''
+		else:
+			return self.usedWords[-1]
 	
 	def passMove(self):
 		self.passedMovement += 1
