@@ -28,6 +28,9 @@
 
 {% block content %}
 <div class="row">
+  <p><strong>Goal:</strong> Each player must add a letter in order to form a new word turn by turn. The number of points you earn is equal to the length of the word you make.</p>
+</div>
+<div class="row">
   {{ playerBlock(0) }}
   <div id="game" class="span6">
     <h1 class="lead">
@@ -35,7 +38,7 @@
         {% if currentPlayer == playerId %}
         This is your turn
         {% else %}
-        Waiting for {{ playerInfos[currentPlayer].name }} to make his move
+        Waiting for {{ playerInfos[currentPlayer].name }} to make his move...
         {% endif %}
       {% endif %}
     </h1>

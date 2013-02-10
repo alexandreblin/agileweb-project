@@ -19,6 +19,13 @@
     var x = $(td).data('x');
     var y = $(td).data('y');
 
+    if (word.length > 0) {
+      var lastLetter = word[word.length - 1];
+      if (Math.abs(lastLetter.x - x) > 1 || Math.abs(lastLetter.y - y) > 1) {
+        return false;
+      }
+    }
+
     var input = $(td).find('> input');
     var letter;
     var isAddedLetter;
@@ -77,17 +84,14 @@
   $("#grid td").mousemove(function(e){
     if (!isDown || $(this).closest('td').hasClass('selected')) return;
 
-    // we select the letter only if we are in the center of the cell
-    // without this, we can't select diagonally because we must pass through the corner of another cell
-    var areaSize = parseFloat($(this).css('font-size')) + 5;
-    var x = e.pageX - this.offsetLeft;
-    var y = e.pageY - this.offsetTop;
-    
-    var xPadding = this.offsetWidth/2 - areaSize/2;
-    var yPadding = this.offsetHeight/2 - areaSize/2;
-
     if (word.length > 0) {
-      if (!(x > xPadding && x < this.offsetWidth - xPadding && y > yPadding && y < this.offsetHeight - yPadding)) {
+      // we select the letter only if we are in the center of the cell
+      // without this, we can't select diagonally because we must pass through the corner of another cell
+      var x = e.pageX - this.offsetLeft;
+      var y = e.pageY - this.offsetTop;
+      var padding = 10;
+      
+      if (!(x > padding && x < this.offsetWidth - padding && y > padding && y < this.offsetHeight - padding)) {
         return;
       }
     }
