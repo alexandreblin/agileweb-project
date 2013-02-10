@@ -28,7 +28,7 @@
 <div class="row">
   {{ playerBlock(0) }}
   <div id="game" class="span6">
-    <h1 class="lead">{% if currentPlayer %}{{ currentPlayer.name }}'s turn{% else %}Awaiting players...{% endif %}</h1>
+    <h1 class="lead">{% if currentPlayer != None %}{{ playerInfos[currentPlayer].name }}'s turn{% else %}Awaiting players...{% endif %}</h1>
     <table class="table table-bordered" id="grid">
       {% for i in range(gridSize) %}
       <tr>
@@ -45,9 +45,11 @@
       {% endfor %}
     </table>
     {{ displayFlashes() }}
+    {% if playerId == currentPlayer %}
     <form action="{{ url_for('game_doMove', gameId=gameId) }}" class="form-inline" method="POST">
       Word: <strong id="word">None</strong> <button type="submit" class="btn btn-small">➠</button>
     </form>
+    {% endif %}
   </div>
   {{ playerBlock(1) }}
 </div>
@@ -63,22 +65,6 @@
   var token = {{ token | tojson | safe }};
 
   !function ($) {
-    function onOpened() {
-      console.log('Channel opened');
-
-      setTimeout(function() {
-        if (playerId === null) {
-          name = prompt('Enter a name', 'Alex');
-          
-          if (name != 'null') {
-            $.post(newPlayerURL, {'name': name}, function(data) {
-              console.log(data);
-            });
-          }
-        }
-      }, 10);
-    }
-
     function onMessage(message) {
       if (message.data == 'reload') {
         document.location.reload(true);
@@ -87,10 +73,7 @@
 
     channel = new goog.appengine.Channel(token);
     socket = channel.open();
-    socket.onopen = onOpened;
     socket.onmessage = onMessage;
-    // socket.onerror = onError;
-    // socket.onclose = onClose;
   }(window.jQuery);
 </script>
 {% endblock %}

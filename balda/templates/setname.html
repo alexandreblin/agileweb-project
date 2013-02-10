@@ -1,0 +1,9 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+<h1>Choose a name</h1>
+
+<form action="{{ url_for('game_newPlayer', gameId=gameId) }}" class="form-inline" method="POST">
+  <label for="name">Nickname:</label> <input type="text" id="name" name="name" /> <button type="submit" class="btn btn-small">➠</button>
+</form>
+{% endblock %}

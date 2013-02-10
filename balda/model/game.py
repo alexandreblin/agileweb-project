@@ -142,7 +142,8 @@ class Game(object):
 				return self.players[x]
 
 	def getCurrentPlayerId(self):
-			return self.getCurrentPlayer().id
+		player = self.getCurrentPlayer()
+		return player.id if player else None
 
 	def setCurrentPlayer(self, playerId):
 		for x in range(0, self.getNumberOfPlayers()):

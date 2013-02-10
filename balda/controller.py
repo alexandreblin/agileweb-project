@@ -14,6 +14,7 @@ class User(object):
     def __init__(self, userId):
         self.id = userId
         self.channelId = None
+        self.token = None
         self.playerId = None
 
 
@@ -21,6 +22,10 @@ class GameInProgress(object):
     def __init__(self):
         self.model = Game()
         self.users = {}
+
+    def getCurrentUser(self):
+        userId = session['userId']
+        return self.users[userId] if userId in self.users else None
 
 
 @app.route('/')
@@ -50,50 +55,34 @@ def gameview(gameId):
 
     game = gamesInProgress[gameId]
 
-    gameModel = game.model
-
-    if session['userId'] not in game.users:
+    user = game.getCurrentUser()
+    if not user:
         user = User(session['userId'])
         game.users[session['userId']] = user
-    else:
-        user = game.users[session['userId']]
+
+    if game.model.getNumberOfPlayers() < game.model.maxPlayers and user.playerId is None:
+        return render_template('setname.html', gameId=gameId)
 
     playerInfos = []
 
-    for player in gameModel.players:
+    for player in game.model.players:
         playerInfos.append({
             'name': player.name,
             'score': player.score,
             'words': player.words
         })
 
-    currentPlayer = playerInfos[gameModel.getCurrentPlayer().id] if len(playerInfos) > 0 else None
-
-    user.channelId = gameId + user.id + binascii.hexlify(os.urandom(8))
-    token = channel.create_channel(user.channelId)
-    app.logger.warn('Created channel with token "%s"' % user.channelId)
+    if not user.channelId:
+        user.channelId = gameId + user.id + binascii.hexlify(os.urandom(8))
+        user.token = channel.create_channel(user.channelId)
 
     return render_template('game.html', gameId=gameId,
                                       playerId=user.playerId,
-                                     gameField=gameModel.gameField,
-                                      gridSize=gameModel.dimension,
+                                     gameField=game.model.gameField,
+                                      gridSize=game.model.dimension,
                                    playerInfos=playerInfos,
-                                 currentPlayer=currentPlayer,
-                                         token=token)
-
-
-@app.route('/_ah/channel/disconnected/', methods=['POST'])
-def channelDisconnect():
-    client_id = request.form['from']
-    app.logger.warn('%s disconnected' % client_id)
-    return Response(status=200)
-
-
-@app.route('/_ah/channel/connected/', methods=['POST'])
-def channelConnect():
-    client_id = request.form['from']
-    app.logger.warn('%s connected' % client_id)
-    return Response(status=200)
+                                 currentPlayer=game.model.getCurrentPlayerId(),
+                                         token=user.token)
 
 
 @app.route('/game/<gameId>/newPlayer', methods=['POST'])
@@ -108,15 +97,16 @@ def game_newPlayer(gameId):
     if playerId is False:
         return Response(status=400)
 
-    user = game.users[session['userId']]
+    user = game.getCurrentUser()
     user.playerId = playerId
 
     app.logger.warn(session)
 
     for u in game.users.values():
-        channel.send_message(u.channelId, 'reload')
+        if u.channelId:
+            channel.send_message(u.channelId, 'reload')
 
-    return '%d' % playerId
+    return redirect(url_for('gameview', gameId=gameId))
 
 
 @app.route('/game/<gameId>/move', methods=['POST'])
@@ -125,7 +115,7 @@ def game_doMove(gameId):
         return redirect(url_for('index'))
 
     game = gamesInProgress[gameId]
-    user = game.users[session['userId']]
+    user = game.getCurrentUser()
 
     if user.playerId == game.model.getCurrentPlayerId():
         wordJSON = json.loads(request.form['word'])
@@ -147,7 +137,8 @@ def game_doMove(gameId):
 
             if res == Game.State.SUCCESS:
                 for u in game.users.values():
-                    channel.send_message(u.channelId, 'reload')
+                    if u.channelId:
+                        channel.send_message(u.channelId, 'reload')
             elif res == Game.State.ERR_UNKNOWN_WORD:
                 flash('Unknown word', 'error')
             elif res == Game.State.ERR_ALREADY_USED:
