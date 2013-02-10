@@ -20,7 +20,9 @@ body {
 #grid {
   width: auto;
   margin: 0 auto 15px;
+}
 
+#grid, #grid input:disabled {
   -moz-user-select: none;
   -ms-user-select: none;
   -khtml-user-select: none;
@@ -29,6 +31,7 @@ body {
 }
 
 #grid td {
+  position: relative;
   height: 50px;
   width: 50px;
   text-align: center;
@@ -43,7 +46,7 @@ body {
   color: #c00;
 }
 
-#grid td.focused {
+#grid td.focused, #grid td.selected {
   background-color: #f1f1f1;
 }
 

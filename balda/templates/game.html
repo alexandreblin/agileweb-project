@@ -30,7 +30,15 @@
 <div class="row">
   {{ playerBlock(0) }}
   <div id="game" class="span6">
-    <h1 class="lead">{% if currentPlayer != None %}{{ playerInfos[currentPlayer].name }}'s turn{% endif %}</h1>
+    <h1 class="lead">
+      {% if currentPlayer != None %}
+        {% if currentPlayer == playerId %}
+        This is your turn
+        {% else %}
+        Waiting for {{ playerInfos[currentPlayer].name }} to make his move
+        {% endif %}
+      {% endif %}
+    </h1>
     <table class="table table-bordered" id="grid">
       {% for i in range(gridSize) %}
       <tr>
@@ -49,6 +57,7 @@
     {{ displayFlashes() }}
     {% if playerId == currentPlayer %}
     <form action="{{ url_for('game_doMove', gameId=gameId) }}" class="form-inline" method="POST">
+      <p class="text-info">Double click an empty cell to put a letter, then click and drag the word you want to submit</p>
       Word: <strong id="word">None</strong> <button type="submit" class="btn btn-small">➠</button>
     </form>
     {% endif %}

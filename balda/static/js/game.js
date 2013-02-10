@@ -56,19 +56,41 @@
 
   var isDown = false;
 
-  $("#grid td").mousedown(function() {
+  $("#grid td").mousedown(function(e) {
     isDown = true;
     word = [];
+    
+    $('#word').html('None');
+    $('#grid input').blur();
     $('#grid td').removeClass('selected');
+    $('#grid').css('cursor','crosshair');
     $(this).trigger('mouseover');
+
+    e.originalEvent.preventDefault();
   });
 
   $(document).mouseup(function() {
     isDown = false;
+    $('#grid').css('cursor','auto');
   });
 
-  $("#grid td").mouseover(function(e){
-    if (!isDown) return;
+  $("#grid td").mousemove(function(e){
+    if (!isDown || $(this).closest('td').hasClass('selected')) return;
+
+    // we select the letter only if we are in the center of the cell
+    // without this, we can't select diagonally because we must pass through the corner of another cell
+    var areaSize = parseFloat($(this).css('font-size')) + 5;
+    var x = e.pageX - this.offsetLeft;
+    var y = e.pageY - this.offsetTop;
+    
+    var xPadding = this.offsetWidth/2 - areaSize/2;
+    var yPadding = this.offsetHeight/2 - areaSize/2;
+
+    if (word.length > 0) {
+      if (!(x > xPadding && x < this.offsetWidth - xPadding && y > yPadding && y < this.offsetHeight - yPadding)) {
+        return;
+      }
+    }
 
     var letter = getCellLetter(this);
     if(letter) {
