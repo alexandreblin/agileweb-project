@@ -87,23 +87,26 @@ def gameview(gameId):
 
 @app.route('/game/<gameId>/newPlayer', methods=['POST'])
 def game_newPlayer(gameId):
-    # if 'games' not in session or gameId not in session['games'] or session['games'][gameId]['playerId'] is not None:
-    #     return Response(status=400)
+    if gameId not in gamesInProgress:
+        return redirect(url_for('index'))
 
     game = gamesInProgress[gameId]
+    user = game.getCurrentUser()
+
+    if not user or user.playerId is not None:
+        return Response(status=400)
 
     playerId = game.model.addPlayer(request.form['name'])
 
     if playerId is False:
         return Response(status=400)
 
-    user = game.getCurrentUser()
     user.playerId = playerId
 
     app.logger.warn(session)
 
     for u in game.users.values():
-        if u.channelId:
+        if u.channelId and u is not user:
             channel.send_message(u.channelId, 'reload')
 
     return redirect(url_for('gameview', gameId=gameId))
@@ -137,7 +140,7 @@ def game_doMove(gameId):
 
             if res == Game.State.SUCCESS:
                 for u in game.users.values():
-                    if u.channelId:
+                    if u.channelId and u is not user:
                         channel.send_message(u.channelId, 'reload')
             elif res == Game.State.ERR_UNKNOWN_WORD:
                 flash('Unknown word', 'error')
