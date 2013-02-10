@@ -165,7 +165,7 @@ class Game(object):
 			self.players.append(player)
 			if self.getNumberOfPlayers() == self.maxPlayers:
 				self.setCurrentPlayer(self.startPlayer)
-			return self.getNumberOfPlayers()
+			return player.id
 
 	def getNumberOfPlayers(self):
 		return len(self.players)
