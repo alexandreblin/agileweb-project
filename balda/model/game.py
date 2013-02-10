@@ -17,6 +17,7 @@ class Game(object):
 		self.startPlayer = startPlayer
 		self.players = []
 		self.usedWords = []
+		self.gameEnded = False
 		self.gameField = [[0 for x in xrange(dimension)] for x in xrange(dimension)] 
 		for line in range(0, dimension):
 			for col in range(0, dimension):
@@ -58,6 +59,7 @@ class Game(object):
 			self.usedWords.append(word)
 
 			if self.isGameFieldComplit():
+				self.endGame()
 				return Game.State.END_OF_GAME
 			else:
 				self.setCurrentPlayer(self.getNextPlayerId())
@@ -75,10 +77,17 @@ class Game(object):
 			return ''
 		else:
 			return self.usedWords[-1]
+
+	def endGame(self):
+		self.gameEnded = True
+		for x in range(0, self.getNumberOfPlayers()):
+			self.players[x].isPlaying = False
+
 	
 	def passMove(self):
 		self.passedMovement += 1
 		if self.passedMovement == 2*len(self.players):			
+			self.endGame()
 			return Game.State.END_OF_GAME
 		else:
 			self.setCurrentPlayer(self.getNextPlayerId())

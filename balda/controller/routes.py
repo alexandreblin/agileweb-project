@@ -49,6 +49,11 @@ def gameview(gameId):
             'words': player.words
         })
 
+    if game.model.gameEnded:
+        winners = [player.id for player in game.model.getWinners()]
+    else:
+        winners = None
+
     if not user.channelId:
         user.channelId = gameId + user.id + binascii.hexlify(os.urandom(8))
         user.token = channel.create_channel(user.channelId)
@@ -59,6 +64,8 @@ def gameview(gameId):
                                       gridSize=game.model.dimension,
                                    playerInfos=playerInfos,
                                  currentPlayer=game.model.getCurrentPlayerId(),
+                                     gameEnded=game.model.gameEnded,
+                                       winners=winners,
                                          token=user.token)
 
 
@@ -98,35 +105,37 @@ def game_doMove(gameId):
     user = game.getCurrentUser()
 
     if user.playerId == game.model.getCurrentPlayerId():
-        wordJSON = json.loads(request.form['word'])
-
-        word = []
-        addedLetter = None
-        for l in wordJSON:
-            letter = Letter(l['letter'], l['x'], l['y'])
-            word.append(letter)
-            if l['isAddedLetter']:
-                addedLetter = letter
-
-        if len(word) < 2:
-            flash('You must make a word', 'error')
-        elif not addedLetter:
-            flash('The word must contain a new letter', 'error')
+        result = None
+        if 'pass' in request.form:
+            result = game.model.passMove()
         else:
-            res = game.model.addWord(word, addedLetter or word[0])
+            wordJSON = json.loads(request.form['word'])
 
-            if res == Game.State.SUCCESS:
-                for u in game.users.values():
-                    if u.channelId and u is not user:
-                        channel.send_message(u.channelId, 'reload')
-            elif res == Game.State.ERR_UNKNOWN_WORD:
-                flash('Unknown word', 'error')
-            elif res == Game.State.ERR_ALREADY_USED:
-                flash('This word was already played', 'error')
-            elif res == Game.State.ERR_WORD_IS_NOT_ON_FIELD:
-                flash('Invalid word placement', 'error')
+            word = []
+            addedLetter = None
+            for l in wordJSON:
+                letter = Letter(l['letter'], l['x'], l['y'])
+                word.append(letter)
+                if l['isAddedLetter']:
+                    addedLetter = letter
+
+            if len(word) < 2:
+                flash('You must make a word', 'error')
+            elif not addedLetter:
+                flash('The word must contain a new letter', 'error')
             else:
-                flash('wut?', 'error')
+                result = game.model.addWord(word, addedLetter or word[0])
+
+        if result == Game.State.SUCCESS or result == Game.State.END_OF_GAME:
+            for u in game.users.values():
+                if u.channelId and u is not user:
+                    channel.send_message(u.channelId, 'reload')
+        elif result == Game.State.ERR_UNKNOWN_WORD:
+            flash('Unknown word', 'error')
+        elif result == Game.State.ERR_ALREADY_USED:
+            flash('This word was already played', 'error')
+        elif result == Game.State.ERR_WORD_IS_NOT_ON_FIELD:
+            flash('Invalid word placement', 'error')
     else:
         flash('This is not your turn', 'error')
 

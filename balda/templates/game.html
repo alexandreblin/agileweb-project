@@ -41,6 +41,14 @@
         {% else %}
         Waiting for {{ playerInfos[currentPlayer].name }} to make a move...
         {% endif %}
+      {% elif gameEnded %}
+        Game ended! 
+        {% if winners | length > 1 %}
+        Draw!
+        {% else %}
+        <strong>{{ playerInfos[winners[0]].name }}</strong> won!
+        {% endif %}
+        <br><a href="{{ url_for('index') }}">Return to homepage</a>
       {% endif %}
     </h1>
     <table class="table table-bordered" id="grid">
@@ -62,7 +70,8 @@
     {% if playerId == currentPlayer %}
     <form action="{{ url_for('game_doMove', gameId=gameId) }}" class="form-inline" method="POST">
       <p class="text-info">Double click an empty cell to put a letter, then click and drag the word you want to submit</p>
-      Word: <strong id="word">None</strong> <button type="submit" class="btn btn-small">➠</button>
+      Word: <strong id="word">None</strong> <input type="submit" class="btn btn-small" value="➠"><br>
+      <input type="submit" class="btn btn-small" style="margin-top: 10px" name="pass" value="Pass this turn">
     </form>
     {% endif %}
   </div>
