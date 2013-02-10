@@ -8,12 +8,15 @@ class Game(object):
 		ERR_ALREADY_USED = -2
 		ERR_WORD_IS_NOT_ON_FIELD = -3
 		SUCCESS =  1
+		END_OF_GAME = 2
 
 	def __init__(self, dimension = 5, maxPlayers = 2, startPlayer = 0):
 		self.maxPlayers = maxPlayers
+		self.passedMovement = 0
 		self.dimension = dimension
 		self.startPlayer = startPlayer
 		self.players = []
+		self.usedWords = []
 		self.gameField = [[0 for x in xrange(dimension)] for x in xrange(dimension)] 
 		for line in range(0, dimension):
 			for col in range(0, dimension):
@@ -22,13 +25,16 @@ class Game(object):
 
 	def setFirstWord(self):
 		dictionary = Dictionary()
-		word = list(dictionary.getWord(self.dimension))
+		word = dictionary.getWord(self.dimension)
+		self.usedWords.append(word)
+		wordAsList = list(word)
 		line = self.dimension/2
 		for col in range(0, self.dimension):
 			self.gameField[line][col] = word[col]
 
 	def setTestWord(self):
 		testWord = 'aahed'
+		self.usedWords.append(testWord)
 		word = list(testWord)
 		line = self.dimension/2
 		for col in range(0, self.dimension):
@@ -40,18 +46,41 @@ class Game(object):
 		word = self.getWord(obj_word)
 		if not dictionary.isWordValid(word):
 			return Game.State.ERR_UNKNOWN_WORD
-		elif  word in self.getAllUsedWords():
+		elif  word in self.usedWords:
 			return Game.State.ERR_ALREADY_USED
 		elif  self.isWordNotValid(obj_word, obj_letter):
 			return Game.State.ERR_WORD_IS_NOT_ON_FIELD
 		else:
+			self.passedMovement = 0
 			self.players[playerId].words.append(word)
 			self.gameField[obj_letter.posLine][obj_letter.posColumn] = obj_letter.letter
 			self.players[playerId].score += len(word)
+			self.usedWords.append(word)
 
+			if isGameFieldComplit():
+				return Game.State.END_OF_GAME
+			else:
+				self.setCurrentPlayer(self.getNextPlayerId())
+				return Game.State.SUCCESS
+
+	def isGameFieldComplit(self):
+		for line in range(0, self.dimension):
+			for col in range(0, self.dimension):
+				if self.gameField[line][col] == '':
+					return False
+		return True
+
+	def getLastPlayedWord(self):
+		return seld.usedWords[-1]
+	
+	def passMove(self):
+		self.passedMovement += 1
+		if self.passedMovement == 2*len(self.players):			
+			return Game.State.END_OF_GAME
+		else:
 			self.setCurrentPlayer(self.getNextPlayerId())
-
 			return Game.State.SUCCESS
+
 
 	def isWordNotValid (self, obj_word, obj_letter):
 		# check if the added letter is actually on a free spot
@@ -74,6 +103,20 @@ class Game(object):
 					return True
 
 		return False
+
+	def getWinners(self):
+		maxScore = 0
+		winners = []
+
+		for x in xrange(len(self.players)):
+			if self.players[x].score > maxScore:
+				maxScore = self.players[x].score
+
+		for x in xrange(len(self.players)):
+			if self.players[x].score == maxScore:
+				winners.append(self.players[x])
+
+		return winners		
 
 
 	def getWord(self, obj_word):
@@ -117,7 +160,8 @@ class Game(object):
 			player = Player(name)
 			player.id = self.getNumberOfPlayers()
 			self.players.append(player)
-			self.setCurrentPlayer(self.startPlayer)
+			if self.getNumberOfPlayers == self.maxPlayers:
+				self.setCurrentPlayer(self.startPlayer)
 			return self.getNumberOfPlayers()
 
 	def getNumberOfPlayers(self):
