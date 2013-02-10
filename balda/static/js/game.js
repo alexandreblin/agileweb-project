@@ -1,6 +1,16 @@
 !function ($) {
   "use strict";
 
+  function onMessage(message) {
+    if (message.data == 'reload') {
+      document.location.reload(true);
+    }
+  }
+
+  var channel = new goog.appengine.Channel(token);
+  var socket = channel.open();
+  socket.onmessage = onMessage;
+
   var word = [];
 
   $("#game form").submit(function() {
