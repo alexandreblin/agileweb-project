@@ -57,7 +57,7 @@ class Game(object):
 			self.players[playerId].score += len(word)
 			self.usedWords.append(word)
 
-			if isGameFieldComplit():
+			if self.isGameFieldComplit():
 				return Game.State.END_OF_GAME
 			else:
 				self.setCurrentPlayer(self.getNextPlayerId())
@@ -163,7 +163,7 @@ class Game(object):
 			player = Player(name)
 			player.id = self.getNumberOfPlayers()
 			self.players.append(player)
-			if self.getNumberOfPlayers == self.maxPlayers:
+			if self.getNumberOfPlayers() == self.maxPlayers:
 				self.setCurrentPlayer(self.startPlayer)
 			return self.getNumberOfPlayers()
 
