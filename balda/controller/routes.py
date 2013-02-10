@@ -2,30 +2,12 @@ from flask import request, render_template, redirect, url_for, flash, session, R
 from balda import app
 from balda.model.game import Game
 from balda.model.letter import Letter
+from balda.controller.user import User
+from balda.controller.gameinprogress import GameInProgress
 from google.appengine.api import channel
 import binascii
 import json
 import os
-
-gamesInProgress = {}
-
-
-class User(object):
-    def __init__(self, userId):
-        self.id = userId
-        self.channelId = None
-        self.token = None
-        self.playerId = None
-
-
-class GameInProgress(object):
-    def __init__(self):
-        self.model = Game()
-        self.users = {}
-
-    def getCurrentUser(self):
-        userId = session['userId']
-        return self.users[userId] if userId in self.users else None
 
 
 @app.route('/')
@@ -35,25 +17,20 @@ def index():
 
 @app.route('/new')
 def newgame():
-    # generate an ID that is not already used
-    uniqueID = binascii.hexlify(os.urandom(8))
-    while uniqueID in gamesInProgress:
-        uniqueID = binascii.hexlify(os.urandom(8))
-
-    gamesInProgress[uniqueID] = GameInProgress()
+    uniqueID = GameInProgress.makeNewGame()
 
     return redirect(url_for('gameview', gameId=uniqueID))
 
 
 @app.route('/game/<gameId>')
 def gameview(gameId):
-    if gameId not in gamesInProgress:
+    if gameId not in GameInProgress.games:
         return redirect(url_for('index'))
 
     if 'userId' not in session:
         session['userId'] = binascii.hexlify(os.urandom(8))
 
-    game = gamesInProgress[gameId]
+    game = GameInProgress.games[gameId]
 
     user = game.getCurrentUser()
     if not user:
@@ -87,10 +64,10 @@ def gameview(gameId):
 
 @app.route('/game/<gameId>/newPlayer', methods=['POST'])
 def game_newPlayer(gameId):
-    if gameId not in gamesInProgress:
+    if gameId not in GameInProgress.games:
         return redirect(url_for('index'))
 
-    game = gamesInProgress[gameId]
+    game = GameInProgress.games[gameId]
     user = game.getCurrentUser()
 
     if not user or user.playerId is not None:
@@ -114,10 +91,10 @@ def game_newPlayer(gameId):
 
 @app.route('/game/<gameId>/move', methods=['POST'])
 def game_doMove(gameId):
-    if gameId not in gamesInProgress:
+    if gameId not in GameInProgress.games:
         return redirect(url_for('index'))
 
-    game = gamesInProgress[gameId]
+    game = GameInProgress.games[gameId]
     user = game.getCurrentUser()
 
     if user.playerId == game.model.getCurrentPlayerId():
