@@ -20,6 +20,8 @@
       <li>None</li>
       {% endfor %}
     </ul>
+    {% else %}
+    <h2 class="muted">Waiting for someone...</h2>
     {% endif %}
   </div>
 {% endmacro %}
@@ -28,7 +30,7 @@
 <div class="row">
   {{ playerBlock(0) }}
   <div id="game" class="span6">
-    <h1 class="lead">{% if currentPlayer != None %}{{ playerInfos[currentPlayer].name }}'s turn{% else %}Awaiting players...{% endif %}</h1>
+    <h1 class="lead">{% if currentPlayer != None %}{{ playerInfos[currentPlayer].name }}'s turn{% endif %}</h1>
     <table class="table table-bordered" id="grid">
       {% for i in range(gridSize) %}
       <tr>

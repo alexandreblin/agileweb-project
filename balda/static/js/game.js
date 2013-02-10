@@ -1,26 +1,19 @@
 !function ($) {
   "use strict";
 
-  function onMessage(message) {
+  var channel = new goog.appengine.Channel(token);
+  var socket = channel.open();
+  socket.onmessage = function onMessage(message) {
     if (message.data == 'reload') {
       document.location.reload(true);
     }
-  }
-
-  var channel = new goog.appengine.Channel(token);
-  var socket = channel.open();
-  socket.onmessage = onMessage;
+  };
 
   var word = [];
 
   $("#game form").submit(function() {
     $(this).append($("<input>").attr("type", "hidden").attr("name", "word").val(JSON.stringify(word)));
   });
-
-  function enableAndFocus(input) {
-    $(input).prop('disabled', false);
-    $(input).focus();
-  }
 
   function getCellLetter(td) {
     var x = $(td).data('x');
@@ -66,7 +59,7 @@
   $("#grid td").mousedown(function() {
     isDown = true;
     word = [];
-    $('#grid td').css({background:"#fff"});
+    $('#grid td').removeClass('selected');
     $(this).trigger('mouseover');
   });
 
@@ -79,11 +72,9 @@
 
     var letter = getCellLetter(this);
     if(letter) {
-      $(this).closest('td').css({background:"#eee"});
+      $(this).closest('td').addClass('selected');
 
       addLetterToWord(letter);
-
-      console.log(JSON.stringify(word));
     }
   });
 

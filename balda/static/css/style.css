@@ -1,3 +1,12 @@
+body {
+  padding-top: 30px;
+}
+
+.hero-unit {
+  width: 70%;
+  margin: 0 auto
+}
+
 #game {
   text-align: center;
 }
@@ -24,6 +33,14 @@
   width: 50px;
   text-align: center;
   vertical-align: middle;
+}
+
+#grid, #grid td {
+  border-color: #bbb;
+}
+
+#grid td.selected, #grid td.selected input {
+  color: #c00;
 }
 
 #grid td.focused {

@@ -1,9 +1,15 @@
 {% extends 'layout.html' %}
 
 {% block content %}
-<h1>Welcome</h1>
+<div class="container">
+  <div class="hero-unit">
+    <h1>Welcome</h1>
 
-<p>
-  <a href="/new" class="btn btn-large btn-primary">New game</a>
-</p>
+    <p>This game is a popular Russian word game. There is a grid with a word in the middle. Turn by turn, each player must add a letter to the grid to form a new word. The longer the word, the higher the score. The game ends when the grid is full or when no new word is found.</p>
+
+    <p>This game was made by <strong>Alexandre Blin</strong> and <strong>Tatiana Kulish</strong> for the Agile Web course.<br>
+      Click on the button to start a new game :</p>
+    <p><a href="/new" class="btn btn-primary btn-large">New game &raquo;</a></p>
+  </div>
+</div>
 {% endblock %}
