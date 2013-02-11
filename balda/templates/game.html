@@ -54,7 +54,7 @@
       {% for i in range(gridSize) %}
       <tr>
         {% for j in range(gridSize) %}
-        <td data-x="{{i}}" data-y="{{j}}"{% if lastPlayed[i][j] %} class="selected"{% endif %}>
+        <td data-x="{{i}}" data-y="{{j}}" class="{% if lastPlayed[i][j] %}selected{% endif %} {% if i == gridSize//2 %}startWord{% endif %}">
           {%- if gameField[i][j] -%}
           {{ gameField[i][j] | upper }}
           {%- else -%}
@@ -69,8 +69,9 @@
     {% if playerId == currentPlayer %}
     <form action="{{ url_for('game_doMove', gameId=gameId) }}" class="form-inline" method="POST">
       <p class="text-info">Double click an empty cell to put a letter, then click and drag the word you want to submit</p>
-      Word: <strong id="word">None</strong> <input type="submit" class="btn btn-small" value="➠"><br>
-      <input type="submit" class="btn btn-small" style="margin-top: 25px" name="pass" value="Pass this turn">
+      Word: <strong id="word">None</strong><br>
+      <input type="submit" class="btn btn-warning btn-small" style="margin-top: 5px" name="pass" value="Pass this turn">&nbsp;&nbsp;
+      <input type="submit" class="btn btn-primary btn-small" style="margin-top: 5px" value="Send word">
     </form>
     {% endif %}
   </div>
