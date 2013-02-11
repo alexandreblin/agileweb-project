@@ -15,9 +15,9 @@ def index():
     return render_template('index.html')
 
 
-@app.route('/new')
+@app.route('/new', methods=['POST'])
 def newgame():
-    uniqueID = GameInProgress.makeNewGame()
+    uniqueID = GameInProgress.makeNewGame(int(request.form['dimension']))
 
     return redirect(url_for('gameview', gameId=uniqueID))
 

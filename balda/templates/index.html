@@ -9,7 +9,19 @@
 
     <p>This game was made by <strong>Alexandre Blin</strong> and <strong>Tatiana Kulish</strong> for the Agile Web course.<br>
       Click on the button to start a new game :</p>
-    <p><a href="/new" class="btn btn-primary btn-large">New game &raquo;</a></p>
+    <form action="{{ url_for('newgame') }}" method="POST">
+    	Game size: <strong id="rangevalue">5x5</strong> <input class="input-small" type="range" min="3" max="9" step="2" value="5" name="dimension"> 
+    	<button type="submit" class="btn btn-primary btn-large">New game &raquo;</button>
+    </form>
   </div>
 </div>
+{% endblock %}
+
+{% block script %}
+{{ super() }}
+<script>
+  $('input[name="dimension"]').change(function() {
+    $('#rangevalue').html($(this).val() + 'x' + $(this).val());
+  })
+</script>
 {% endblock %}

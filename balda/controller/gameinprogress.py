@@ -8,18 +8,18 @@ class GameInProgress(object):
     games = {}
 
     @staticmethod
-    def makeNewGame():
+    def makeNewGame(dimension=None):
         # generate an ID that is not already used
         uniqueID = binascii.hexlify(os.urandom(8))
         while uniqueID in GameInProgress.games:
             uniqueID = binascii.hexlify(os.urandom(8))
 
-        GameInProgress.games[uniqueID] = GameInProgress()
+        GameInProgress.games[uniqueID] = GameInProgress(dimension)
 
         return uniqueID
 
-    def __init__(self):
-        self.model = Game()
+    def __init__(self, dimension):
+        self.model = Game() if not dimension else Game(dimension=dimension)
         self.users = {}
 
     def getCurrentUser(self):
